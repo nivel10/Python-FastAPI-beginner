@@ -3,5 +3,9 @@ from fastapi import FastAPI
 app = FastAPI()
 
 @app.get('/')
-async def  read_rood():
+async def get_rood():
     return {'greeting': 'Hello world...!!!'}
+
+@app.get('/url')
+async def get_url():
+    return {'url_cursor': 'https://chejconsultor.com.ve'}
