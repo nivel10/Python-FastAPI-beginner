@@ -14,17 +14,29 @@ users.append(User(id=1, name='Nikole', last_name='Smith', age=10))
 users.append(User(id=2, name='Carlos', last_name='Hernandez', age=44))
 users.append(User(id=3, name='Andres', last_name='Correa', age=25))
 
-@app.get('/users')
-def users_json():
+@app.get('/users/')
+async def users_json():
     return users
 
 @app.get('/users/{id}')
-def user_by_id(id: int):
+async def user_by_id(id: int):
     return search_user_by_id(id=id)
     
 @app.get('/user_query/')
-def user_query(id: int):
+async def user_query(id: int):
     return search_user_by_id(id=id)
+
+@app.post('/users/')
+async def user_create(user: User):
+    try:
+        if type(search_user_by_id(id=user.id)) == User:
+            return {'error': 'The user already exists'}
+        else:
+            users.append(user)
+            return search_user_by_id(id=user.id)
+    
+    except:
+        return {'error': 'creating user', 'data': user}
 
 def search_user_by_id(id: int):
     try:
@@ -32,3 +44,4 @@ def search_user_by_id(id: int):
         return list(users_find)[0]
     except:
         return {'error': 'not found'}
+    
