@@ -22,3 +22,28 @@ def users_json():
     #     {'message': 'Hello users', 'name': 'Nikole'},
     # ]
     return users
+
+@app.get('/users/{id}')
+def user_by_id(id: int):
+    # try:
+    #     users_find = filter(lambda user: user.id == id, users)
+    #     return list(users_find)[0]
+    # except:
+    #     return {'error': 'not found'}
+    return search_user_by_id(id=id)
+    
+@app.get('/user_query/')
+def user_query(id: int):
+    # try:
+    #     users_find = filter(lambda user: user.id == id, users)
+    #     return list(users_find)[0]
+    # except:
+    #     return {'error': 'not found'}
+    return search_user_by_id(id=id)
+    
+def search_user_by_id(id: int):
+    try:
+        users_find = filter(lambda user: user.id == id, users)
+        return list(users_find)[0]
+    except:
+        return {'error': 'not found'}
