@@ -3,6 +3,10 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+# documentation
+## swagger /docs
+## ReDoc /redoc
+
 class User(BaseModel):
     id: int
     name: str
@@ -69,8 +73,10 @@ async def user_delete_by_id(id: int):
         for index, user_data in enumerate(users):
             if user_data.id == id:
                 user_found = True
+                #region
                 # users.pop(index)
                 # users.remove(user)
+                #endregion
                 del users[index]
                 break
 
