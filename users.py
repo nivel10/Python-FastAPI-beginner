@@ -22,10 +22,30 @@ async def users_json():
 async def user_by_id(id: int):
     return search_user_by_id(id=id)
     
-@app.get('/user_query/')
+@app.get('/users_query/')
 async def user_query(id: int):
     return search_user_by_id(id=id)
 
+@app.put('/users/{id}')
+async def user_update(user: User, id: int):
+    try:
+        if id != user.id:
+            return {'error': 'id parameter is not same than id user propertie'}
+        user_before: User = search_user_by_id(id=id)
+        if type(user_before) != User:
+            # return user_before
+            return {'error': 'user not found'}
+        
+        for index, user_data in enumerate(users):
+            if user_data.id == id:
+                users[index] = user
+                break
+        
+        return {'before': user_before, 'after': user}
+    except Exception as ex:
+        return {'error': 'updating user', 'data': user, 'ex': ex}
+
+# ----------------------------------------
 @app.post('/users/')
 async def user_create(user: User):
     try:

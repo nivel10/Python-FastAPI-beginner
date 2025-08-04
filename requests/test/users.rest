@@ -7,13 +7,13 @@ GET http://127.0.0.1:8000/users/1 HTTP/1.1
 GET http://127.0.0.1:8000/users/4 HTTP/1.1
 ###
 
-GET http://127.0.0.1:8000/user_query/?id=1 HTTP/1.1
+GET http://127.0.0.1:8000/users_query/?id=1 HTTP/1.1
 ###
 
-GET http://127.0.0.1:8000/user_query/?id=3 HTTP/1.1
+GET http://127.0.0.1:8000/users_query/?id=3 HTTP/1.1
 ###
 
-GET http://127.0.0.1:8000/user_query/?id=luis HTTP/1.1
+GET http://127.0.0.1:8000/users_query/?id=luis HTTP/1.1
 ###
 
 POST http://127.0.0.1:8000/users/ HTTP/1.1
@@ -24,4 +24,15 @@ Content-Type: application/json
     "name": "Michael",
     "last_name": "Zulivan",
     "age": 19
+}
+###
+
+PUT http://127.0.0.1:8000/users/2 HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": 2,
+    "name": "Angel",
+    "last_name": "Contreras",
+    "age": 42
 }
