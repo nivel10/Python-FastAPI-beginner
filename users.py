@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -30,23 +30,27 @@ async def user_by_id(id: int):
 async def user_query(id: int):
     return search_user_by_id(id=id)
 
-@app.post('/users/')
+@app.post('/users/', response_model=User, status_code=201)
 async def user_create(user: User):
     try:
         if type(search_user_by_id(id=user.id)) == User:
-            return {'error': 'The user already exists'}
+            # # return {'error': 'The user already exists'}
+            # return HTTPException(status_code=204, detail='The user already exists')
+            raise HTTPException(status_code=204, detail='The user already exists')
         else:
             users.append(user)
             return search_user_by_id(id=user.id)
     
-    except:
-        return {'error': 'creating user', 'data': user}
+    except Exception as ex:
+        return {'error': 'creating user', 'data': user, 'ex': ex}
 
 @app.put('/users/{id}')
 async def user_update(user: User, id: int):
     try:
         if id != user.id:
-            return {'error': 'id parameter is not same than id user propertie'}
+            # return {'error': 'id parameter is not same than id user propertie'}
+            # return HTTPException(status_code=204, detail='id parameter is not same than id user propertie')
+            raise HTTPException(status_code=204, detail='id parameter is not same than id user propertie')
         
         user_before: User = search_user_by_id(id=id)
         if type(user_before) != User:
