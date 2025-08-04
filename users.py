@@ -83,10 +83,11 @@ async def user_delete_by_id(id: int):
         return {'before': user, } if user_found else {'error': 'user not found'}
     except Exception as ex:
         return {'error': 'deleting user', 'data': id, 'ex': ex, }
+
 # ----------------------------------------
 def search_user_by_id(id: int):
     try:
         users_find = filter(lambda user: user.id == id, users)
         return list(users_find)[0]
-    except:
-        return {'error': 'not found'}
+    except Exception as ex:
+        return {'error': 'not found', 'data': id, 'ex': ex, }
