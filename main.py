@@ -1,6 +1,11 @@
 from fastapi import FastAPI
+from routers import products, users
 
 app = FastAPI()
+
+# ----------------------- routers
+app.include_router(products.router_products)
+app.include_router(users.router_users)
 
 # documentation
 ## swagger /docs
