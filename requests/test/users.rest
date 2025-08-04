@@ -36,3 +36,6 @@ Content-Type: application/json
     "last_name": "Contreras",
     "age": 42
 }
+###
+
+DELETE http://127.0.0.1:8000/users/2 HTTP/1.1

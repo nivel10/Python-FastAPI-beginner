@@ -26,6 +26,18 @@ async def user_by_id(id: int):
 async def user_query(id: int):
     return search_user_by_id(id=id)
 
+@app.post('/users/')
+async def user_create(user: User):
+    try:
+        if type(search_user_by_id(id=user.id)) == User:
+            return {'error': 'The user already exists'}
+        else:
+            users.append(user)
+            return search_user_by_id(id=user.id)
+    
+    except:
+        return {'error': 'creating user', 'data': user}
+
 @app.put('/users/{id}')
 async def user_update(user: User, id: int):
     try:
@@ -46,23 +58,29 @@ async def user_update(user: User, id: int):
     except Exception as ex:
         return {'error': 'updating user', 'data': user, 'ex': ex}
 
-# ----------------------------------------
-@app.post('/users/')
-async def user_create(user: User):
+@app.delete('/users/{id}')
+async def user_delete_by_id(id: int):
     try:
-        if type(search_user_by_id(id=user.id)) == User:
-            return {'error': 'The user already exists'}
-        else:
-            users.append(user)
-            return search_user_by_id(id=user.id)
-    
-    except:
-        return {'error': 'creating user', 'data': user}
+        user_found = False
+        user: User = search_user_by_id(id=id)
+        if type(user) != User:
+            return {'error': 'user not found'}
+        
+        for index, user_data in enumerate(users):
+            if user_data.id == id:
+                user_found = True
+                # users.pop(index)
+                # users.remove(user)
+                del users[index]
+                break
 
+        return {'before': user, } if user_found else {'error': 'user not found'}
+    except Exception as ex:
+        return {'error': 'deleting user', 'data': id, 'ex': ex, }
+# ----------------------------------------
 def search_user_by_id(id: int):
     try:
         users_find = filter(lambda user: user.id == id, users)
         return list(users_find)[0]
     except:
         return {'error': 'not found'}
-    
