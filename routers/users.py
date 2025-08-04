@@ -1,7 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-router_users = APIRouter()
+router_users = APIRouter(
+    prefix='/users',
+    tags=['users'],
+    responses={404: {'message': 'not found'}}
+)
 
 # documentation
 ## swagger /docs
@@ -18,19 +22,19 @@ users.append(User(id=1, name='Nikole', last_name='Smith', age=10))
 users.append(User(id=2, name='Carlos', last_name='Hernandez', age=44))
 users.append(User(id=3, name='Andres', last_name='Correa', age=25))
 
-@router_users.get('/users/')
+@router_users.get('/')
 async def users_json():
     return users
 
-@router_users.get('/users/{id}')
+@router_users.get('/{id}')
 async def user_by_id(id: int):
     return search_user_by_id(id=id)
     
-@router_users.get('/users_query/')
+@router_users.get('_query/')
 async def user_query(id: int):
     return search_user_by_id(id=id)
 
-@router_users.post('/users/', response_model=User, status_code=201)
+@router_users.post('/', response_model=User, status_code=201)
 async def user_create(user: User):
     try:
         if type(search_user_by_id(id=user.id)) == User:
@@ -44,7 +48,7 @@ async def user_create(user: User):
     except Exception as ex:
         return {'error': 'creating user', 'data': user, 'ex': ex}
 
-@router_users.put('/users/{id}')
+@router_users.put('/{id}')
 async def user_update(user: User, id: int):
     try:
         if id != user.id:
@@ -66,7 +70,7 @@ async def user_update(user: User, id: int):
     except Exception as ex:
         return {'error': 'updating user', 'data': user, 'ex': ex}
 
-@router_users.delete('/users/{id}')
+@router_users.delete('/{id}')
 async def user_delete_by_id(id: int):
     try:
         user_found = False

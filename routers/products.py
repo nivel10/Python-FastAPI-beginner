@@ -1,7 +1,11 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-router_products = APIRouter(prefix='/products')
+router_products = APIRouter(
+    prefix='/products',
+    tags=['products'],
+    responses={404: {'message': 'not found'}}
+)
 
 # documentation
 ## swagger /docs

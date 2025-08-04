@@ -11,10 +11,11 @@ app.include_router(users.router_users)
 ## swagger /docs
 ## Redoc /redoc
 
-@app.get('/')
+
+@app.get('/', tags=['main'])
 async def get_rood():
     return {'greeting': 'Hello world...!!!'}
 
-@app.get('/url')
+@app.get('/url', tags=['main'])
 async def get_url():
     return {'url_cursor': 'https://chejconsultor.com.ve'}
