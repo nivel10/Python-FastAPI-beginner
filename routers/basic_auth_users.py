@@ -46,7 +46,7 @@ def search_user(user_name: str):
 
 async def current_user(token: str = Depends(oauth2)):
     user: User = search_user(user_name=token)
-    user_no_password: User = User(**user)
+    user_no_password = User(**user)
 
     if not user:
         raise HTTPException(
