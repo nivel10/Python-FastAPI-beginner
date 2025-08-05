@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 
 ACCESS_TOKEN_ALGORITHM = 'HS256'
-ACCESS_TOKEN_DURATION = 60
+ACCESS_TOKEN_DURATION = 1
 ACCESS_TOTEN_KEY = '35852669a66715cbe7145ecb9d502e8b9cc86a0c400445fc4ff5bc39e969e27b'
 
 app = FastAPI()
@@ -42,15 +42,6 @@ users_db: object = {
         'password': '$2a$12$FUDw2dx1xtaptGulMhqlPejkhmUBKdIyYMLqzIhaLBmRenm16Rxfe'
     },
 }
-
-# def search_user(user_name: str):
-#     if user_name in users_db:
-#         user: User = users_db[user_name]
-#         return user
-
-# def search_user_db(user_name: str):
-#     if user_name in users_db:
-#         return users_db[user_name]
 
 def search_user_db(user_name: str):
     if user_name in users_db:

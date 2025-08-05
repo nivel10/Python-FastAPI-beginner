@@ -5,7 +5,7 @@ username=nikole&password=123456
 ###
 
 GET http://127.0.0.1:8000/users/me HTTP/1.1
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJuaWtvbGUiLCJleHAiOjE3NTQ0Mzc3ODB9.sfinyXl8UdsjkW_u0LTr0pzUanDL_WWcrppvl1bGS2c
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJuaWtvbGUiLCJleHAiOjE3NTQ0MzU3Njd9.wHJIkV17DaPRwKZDqwFIOlPYrCqgZx5AeHoOKoApJvM
 ###
 
 GET http://127.0.0.1:8000/users HTTP/1.1
