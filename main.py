@@ -7,10 +7,15 @@ app = FastAPI()
 app.include_router(products.router_products)
 app.include_router(users.router_users)
 
+# server run
+## uvicor - uvicorn main:app --reload
+
+# server url
+## http://127.0.0.1:8000
+
 # documentation
 ## swagger /docs
 ## Redoc /redoc
-
 
 @app.get('/', tags=['main'])
 async def get_rood():
