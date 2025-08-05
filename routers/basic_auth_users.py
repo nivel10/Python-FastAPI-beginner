@@ -11,7 +11,7 @@ class User(BaseModel):
     name: str
     last_name: str
     email: str
-    disbaled: bool
+    disabled: bool
 
 class UserDB(User):
     password: str
@@ -35,14 +35,22 @@ users_db: object = {
     },
 }
 
-def search_user(user_name: str):
+def search_user_db(user_name: str):
     if user_name in users_db:
         # # return UserDB(users_db[user_name])
         # return UserDB(**users_db[user_name])
         return users_db[user_name]
 
+def search_user(user_name: str):
+    if user_name in users_db:
+        user: User = users_db[user_name]
+        return user
+
 async def current_user(token: str = Depends(oauth2)):
-    user: UserDB = search_user(user_name=token)
+    # user: UserDB = search_user_db(user_name=token)
+    user: User = search_user(user_name=token)
+    user_no_password: User = User(**user)
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -50,7 +58,10 @@ async def current_user(token: str = Depends(oauth2)):
             headers={'www-Authenticate': 'Bearer'}
         )
     
-    return user
+    if user['disabled']:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='user disabled')
+    
+    return user_no_password
 
 @app.post('/login')
 async def login(form: OAuth2PasswordRequestForm = Depends()):
@@ -58,7 +69,7 @@ async def login(form: OAuth2PasswordRequestForm = Depends()):
     if not user_db:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='user is not valid')
 
-    user: UserDB = search_user(user_name=form.username)
+    user: UserDB = search_user_db(user_name=form.username)
     if not user['password'] == form.password:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='user or password incorrect')
     
@@ -67,3 +78,7 @@ async def login(form: OAuth2PasswordRequestForm = Depends()):
 @app.get('/users/me')
 async def users_me(user: User = Depends(current_user)):
     return user
+
+@app.get('/users')
+async def users():
+    return users_db
