@@ -3,6 +3,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from jose import jwt
 
+ALGORITHM = 'HS256'
+
 app = FastAPI()
 
 oauth2 = OAuth2PasswordBearer(tokenUrl='/login')
