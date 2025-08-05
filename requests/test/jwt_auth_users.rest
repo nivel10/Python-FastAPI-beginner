@@ -1,22 +1,22 @@
-POST  http://127.0.0.1:8000/login HTTP/1.1
+POST  http://127.0.0.1:8000/jwt/login HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 username=nikole&password=123456
 ###
 
-GET http://127.0.0.1:8000/users/me HTTP/1.1
+GET http://127.0.0.1:8000/jwt/users/me HTTP/1.1
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJuaWtvbGUiLCJleHAiOjE3NTQ0MzU3Njd9.wHJIkV17DaPRwKZDqwFIOlPYrCqgZx5AeHoOKoApJvM
 ###
 
-GET http://127.0.0.1:8000/users HTTP/1.1
+GET http://127.0.0.1:8000/jwt/users HTTP/1.1
 ###
 
-POST  http://127.0.0.1:8000/login HTTP/1.1
+POST  http://127.0.0.1:8000/jwt/login HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 username=carlos&password=654321
 ###
 
-GET http://127.0.0.1:8000/users/me HTTP/1.1
+GET http://127.0.0.1:8000/jwt/users/me HTTP/1.1
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYXJsb3MiLCJleHAiOjE3NTQ0MzU5NTl9.I5zTEwivuLcp7BGarI-8AL1wOsW5sJGynCh4cX2nLG4
 ###
