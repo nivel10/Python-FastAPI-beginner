@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from jose import jwt
@@ -35,3 +35,22 @@ users_db: object = {
         'password': '123456'
     },
 }
+
+def search_user_db(user_name: str):
+    if user_name in users_db:
+        return users_db[user_name]
+    
+@app.post('/login')
+async def login(form: OAuth2PasswordRequestForm = Depends()):
+    user_db = users_db.get(form.username)
+    if not user_db:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='user not found'
+        )
+    
+    user: UserDB = search_user_db(user_name=form.username)
+    if not user['password'] == form.password:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='user or password incorrect')
+    
+    return {'access_token': user['user_name'], 'token_type': 'bearer',}
