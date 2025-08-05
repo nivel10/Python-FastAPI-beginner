@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from routers import products, users
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
 # ----------------------- routers
 app.include_router(products.router_products)
 app.include_router(users.router_users)
+app.mount('/static', StaticFiles(directory='static'), name='static')
 
 # server run
 ## uvicor - uvicorn main:app --reload
