@@ -37,8 +37,6 @@ users_db: object = {
 
 def search_user_db(user_name: str):
     if user_name in users_db:
-        # # return UserDB(users_db[user_name])
-        # return UserDB(**users_db[user_name])
         return users_db[user_name]
 
 def search_user(user_name: str):
@@ -47,7 +45,6 @@ def search_user(user_name: str):
         return user
 
 async def current_user(token: str = Depends(oauth2)):
-    # user: UserDB = search_user_db(user_name=token)
     user: User = search_user(user_name=token)
     user_no_password: User = User(**user)
 
