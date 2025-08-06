@@ -7,5 +7,5 @@ class User(BaseModel):
     username: str
     first_name: str
     last_name: str
-    email: str
     age: int
+    email: str

@@ -19,29 +19,32 @@ users: list[User] = []
 
 @router_users_db.get('/')
 async def users_json():
+
     return users
 
 @router_users_db.get('/{id}')
-async def user_by_id(id: int):
+async def user_by_id(id: str):
     return search_user_by_id(id=id)
     
 @router_users_db.get('query/')
 async def user_query(id: int):
     return search_user_by_id(id=id)
 
-@router_users_db.post('/', response_model=User, status_code=201)
+#@router_users_db.post('/', response_model=User, status_code=201)
+@router_users_db.post('/', status_code=201)
 async def user_create(user: User):
     try:
-        #region
-        # if type(search_user_by_id(id=user.id)) == User:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_202_ACCEPTED, 
-        #         detail='The user already exists'
-        #     )
-        # else:
-        #     users.append(user)
-        #     return search_user_by_id(id=user.id)
-        #endregion
+        if type(search_user_by_username(username=user.username)) == User:
+            raise HTTPException(
+                status_code=status.HTTP_202_ACCEPTED, 
+                detail='the username already exists'
+            )
+        
+        if type(search_user_by_email(email=user.email)) == User:
+            raise HTTPException(
+                status_code=status.HTTP_202_ACCEPTED,
+                detail='the email already exists'
+            )
 
         user_dict = dict(user)
         del user_dict['id']
@@ -49,7 +52,7 @@ async def user_create(user: User):
         user_id = db_client.python_api.users.insert_one(user_dict).inserted_id
         user_find = user_schema(db_client.python_api.users.find_one({'_id': user_id}))
         user = User(**user_find)
-        
+
         return user
     
     except Exception as ex:
@@ -100,9 +103,34 @@ async def user_delete_by_id(id: int):
         return {'error': 'deleting user', 'data': id, 'ex': ex, }
 
 # ----------------------------------------
-def search_user_by_id(id: int):
+def search_user_by_id(id: str):
     try:
-        users_find = filter(lambda user: user.id == id, users)
-        return list(users_find)[0]
+        # users_find = filter(lambda user: user.id == id, users)
+        # return list(users_find)[0]
+
+        return db_client.python_api.users.find_one({'_id': id})
+        user_find = user_schema(db_client.python_api.users.find_one({'_id': object(id)}))
+        return user_find
+        user = User(**user_find)
+        
+        return user
     except Exception as ex:
         return {'error': 'not found', 'data': id, 'ex': ex, }
+    
+def search_user_by_username(username: str):
+    try:
+        user_find = db_client.python_api.users.find_one({'username': username})
+        user_find = user_schema(user_find)
+        user = User(**user_find)
+        return user
+    except Exception as ex:
+        return { 'error': 'search user by username', 'ex': ex, }
+    
+def search_user_by_email(email: str):
+    try:
+        user_find = db_client.python_api.users.find_one({'email': email})
+        user_find = user_schema(user_find)
+        user = User(**user_find)
+        return user
+    except Exception as ex:
+        return { 'error': 'search user by email', 'ex': ex, }
