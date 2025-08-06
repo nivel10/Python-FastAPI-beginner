@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from db.models.user import User
+from db.schemas.user import user_schema
+from db.client import db_client
 
 router_users_db = APIRouter(
     prefix='/usersdb',
@@ -30,14 +32,25 @@ async def user_query(id: int):
 @router_users_db.post('/', response_model=User, status_code=201)
 async def user_create(user: User):
     try:
-        if type(search_user_by_id(id=user.id)) == User:
-            raise HTTPException(
-                status_code=status.HTTP_202_ACCEPTED, 
-                detail='The user already exists'
-            )
-        else:
-            users.append(user)
-            return search_user_by_id(id=user.id)
+        #region
+        # if type(search_user_by_id(id=user.id)) == User:
+        #     raise HTTPException(
+        #         status_code=status.HTTP_202_ACCEPTED, 
+        #         detail='The user already exists'
+        #     )
+        # else:
+        #     users.append(user)
+        #     return search_user_by_id(id=user.id)
+        #endregion
+
+        user_dict = dict(user)
+        del user_dict['id']
+
+        user_id = db_client.python_api.users.insert_one(user_dict).inserted_id
+        user_find = user_schema(db_client.python_api.users.find_one({'_id': user_id}))
+        user = User(**user_find)
+        
+        return user
     
     except Exception as ex:
         return {'error': 'creating user', 'data': user, 'ex': ex}

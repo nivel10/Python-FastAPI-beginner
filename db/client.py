@@ -7,5 +7,8 @@ load_dotenv()
 mongodb_url = os.getenv('MONGO_DB_URL')
 
 db_client = MongoClient(
-    host=mongodb_url
+    mongodb_url,
+    # warning, do not use this on production
+     tls=True,
+     tlsAllowInvalidCertificates=True
 )
