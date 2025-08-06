@@ -108,34 +108,6 @@ async def user_delete_by_id(id: int):
         return {'error': 'deleting user', 'data': id, 'ex': ex, }
 
 # ----------------------------------------
-# def search_user_by_id(id: str):
-#     try:
-#         user_find = db_client.python_api.users.find_one({'_id': ObjectId(id)})
-#         user_find = user_schema(user_find)
-#         user = User(**user_find)
-
-#         return user
-#     except Exception as ex:
-#         return {'error': 'not found', 'data': id, 'ex': ex, }
-    
-# def search_user_by_username(username: str):
-#     try:
-#         user_find = db_client.python_api.users.find_one({'username': username})
-#         user_find = user_schema(user_find)
-#         user = User(**user_find)
-#         return user
-#     except Exception as ex:
-#         return { 'error': 'search user by username', 'ex': ex, }
-    
-# def search_user_by_email(email: str):
-#     try:
-#         user_find = db_client.python_api.users.find_one({'email': email})
-#         user_find = user_schema(user_find)
-#         user = User(**user_find)
-#         return user
-#     except Exception as ex:
-#         return { 'error': 'search user by email', 'ex': ex, }
-    
 def search_user(key: str, value: str | ObjectId):
     try:
         user_find = db_client.python_api.users.find_one({key: value})
