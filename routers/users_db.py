@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from db.models.user import User
 from db.schemas.user import user_schema, users_schema
 from db.client import db_client
+from bson import ObjectId
 
 router_users_db = APIRouter(
     prefix='/usersdb',
@@ -24,28 +25,32 @@ async def users_json():
 
 @router_users_db.get('/{id}')
 async def user_by_id(id: str):
-    return search_user_by_id(id=id)
+    # return search_user_by_id(id=id)
+    return search_user(key='_id', value=ObjectId(id))
     
-@router_users_db.get('query/')
-async def user_query(id: int):
-    return search_user_by_id(id=id)
+@router_users_db.get('/query/')
+async def user_query(id: str):
+    # return search_user_by_id(id=id)
+    return search_user(key='_id', value=ObjectId(id))
 
 #@router_users_db.post('/', response_model=User, status_code=201)
 @router_users_db.post('/', status_code=201)
 async def user_create(user: User):
     try:
-        if type(search_user_by_username(username=user.username)) == User:
+        # if type(search_user_by_username(username=user.username)) == User:
+        if type(search_user(key='username', value=user.username)) == User:
             raise HTTPException(
                 status_code=status.HTTP_202_ACCEPTED, 
                 detail='the username already exists'
             )
         
-        if type(search_user_by_email(email=user.email)) == User:
+        # if type(search_user_by_email(email=user.email)) == User:
+        if type(search_user(key='email', value=user.email)) == User:
             raise HTTPException(
                 status_code=status.HTTP_202_ACCEPTED,
                 detail='the email already exists'
             )
-
+        
         user_dict = dict(user)
         del user_dict['id']
 
@@ -103,32 +108,40 @@ async def user_delete_by_id(id: int):
         return {'error': 'deleting user', 'data': id, 'ex': ex, }
 
 # ----------------------------------------
-def search_user_by_id(id: str):
-    try:
-        print(id)
-        user_find = db_client.python_api.users.find_one({'_id': id})
-        print(user_find)
-        user_find = user_schema(user_find)
-        print(user_find)
-        user = User(**user_find)
-        return user
-    except Exception as ex:
-        return {'error': 'not found', 'data': id, 'ex': ex, }
+# def search_user_by_id(id: str):
+#     try:
+#         user_find = db_client.python_api.users.find_one({'_id': ObjectId(id)})
+#         user_find = user_schema(user_find)
+#         user = User(**user_find)
+
+#         return user
+#     except Exception as ex:
+#         return {'error': 'not found', 'data': id, 'ex': ex, }
     
-def search_user_by_username(username: str):
-    try:
-        user_find = db_client.python_api.users.find_one({'username': username})
-        user_find = user_schema(user_find)
-        user = User(**user_find)
-        return user
-    except Exception as ex:
-        return { 'error': 'search user by username', 'ex': ex, }
+# def search_user_by_username(username: str):
+#     try:
+#         user_find = db_client.python_api.users.find_one({'username': username})
+#         user_find = user_schema(user_find)
+#         user = User(**user_find)
+#         return user
+#     except Exception as ex:
+#         return { 'error': 'search user by username', 'ex': ex, }
     
-def search_user_by_email(email: str):
+# def search_user_by_email(email: str):
+#     try:
+#         user_find = db_client.python_api.users.find_one({'email': email})
+#         user_find = user_schema(user_find)
+#         user = User(**user_find)
+#         return user
+#     except Exception as ex:
+#         return { 'error': 'search user by email', 'ex': ex, }
+    
+def search_user(key: str, value: str | ObjectId):
     try:
-        user_find = db_client.python_api.users.find_one({'email': email})
+        user_find = db_client.python_api.users.find_one({key: value})
         user_find = user_schema(user_find)
         user = User(**user_find)
+
         return user
     except Exception as ex:
-        return { 'error': 'search user by email', 'ex': ex, }
+        return {'error': 'serach user', 'ex': ex, }
