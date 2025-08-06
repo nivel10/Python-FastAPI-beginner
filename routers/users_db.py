@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from db.models.user import User
-from db.schemas.user import user_schema
+from db.schemas.user import user_schema, users_schema
 from db.client import db_client
 
 router_users_db = APIRouter(
@@ -17,10 +17,10 @@ router_users_db = APIRouter(
 
 users: list[User] = []
 
-@router_users_db.get('/')
+@router_users_db.get('/', response_model=list[User])
 async def users_json():
-
-    return users
+    users = db_client.python_api.users.find()
+    return users_schema(users)
 
 @router_users_db.get('/{id}')
 async def user_by_id(id: str):
@@ -105,14 +105,12 @@ async def user_delete_by_id(id: int):
 # ----------------------------------------
 def search_user_by_id(id: str):
     try:
-        # users_find = filter(lambda user: user.id == id, users)
-        # return list(users_find)[0]
-
-        return db_client.python_api.users.find_one({'_id': id})
-        user_find = user_schema(db_client.python_api.users.find_one({'_id': object(id)}))
-        return user_find
+        print(id)
+        user_find = db_client.python_api.users.find_one({'_id': id})
+        print(user_find)
+        user_find = user_schema(user_find)
+        print(user_find)
         user = User(**user_find)
-        
         return user
     except Exception as ex:
         return {'error': 'not found', 'data': id, 'ex': ex, }
