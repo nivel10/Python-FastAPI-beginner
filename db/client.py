@@ -43,7 +43,7 @@ db_client_local = MongoClient(
 )[mongodb_obj.db_name]
 
 db_client_local = MongoClient(
-    # mongodb_obj.urls.local,
-    mongodb_obj.urls.server,
-    tlsCAFIle=mongodb_obj.certifi,
+    mongodb_obj.urls.local,
+    # mongodb_obj.urls.server,
+    # tlsCAFIle=mongodb_obj.certifi,
 )[mongodb_obj.db_name]
