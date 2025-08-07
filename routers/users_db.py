@@ -86,24 +86,17 @@ async def user_update(user: User, id: int):
         return {'error': 'updating user', 'data': user, 'ex': ex}
 
 @router_users_db.delete('/{id}')
-async def user_delete_by_id(id: int):
+async def user_delete_by_id(id: str):
     try:
-        user_found = False
-        user: User = search_user_by_id(id=id)
+        user: User = search_user(key='_id', value=ObjectId(id))
         if type(user) != User:
-            return {'error': 'user not found'}
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='user not found'
+            )
         
-        for index, user_data in enumerate(users):
-            if user_data.id == id:
-                user_found = True
-                #region
-                # users.pop(index)
-                # users.remove(user)
-                #endregion
-                del users[index]
-                break
-
-        return {'before': user, } if user_found else {'error': 'user not found'}
+        db_client.python_api.users.delete_one({'_id': ObjectId(id)})
+        return {'before': user, }
     except Exception as ex:
         return {'error': 'deleting user', 'data': id, 'ex': ex, }
 

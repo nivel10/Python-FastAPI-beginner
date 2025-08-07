@@ -6,7 +6,7 @@ POST http://127.0.0.1:8000/usersdb HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "carlos25",
+    "username": "carlos",
     "first_name": "Carlos",
     "last_name": "Cold",
     "age": 44,
@@ -18,4 +18,7 @@ GET http://127.0.0.1:8000/usersdb/6893c7fc3d08c41f971e9b8a HTTP/1.1
 ###
 
 GET http://127.0.0.1:8000/usersdb/query/?id=6893c8113d08c41f971e9b8b HTTP/1.1
+###
+
+DELETE http://127.0.0.1:8000/usersdb/6893c82c3d08c41f971e9b8c HTTP/1.1
 ###
