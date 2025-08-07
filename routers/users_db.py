@@ -142,4 +142,11 @@ def search_user(key: str, value: str | ObjectId):
             detail='user not found'
         )
     except Exception as ex:
-        return {'error': 'search user', 'data': {'key': key, 'value': str(value) if type(value) == ObjectId else value }, 'ex': ex, }
+        return {
+            'error': 'search user', 
+            'data': {
+                'key': key, 
+                'value': str(value) if type(value) == ObjectId else value 
+                }, 
+            'ex': ex, 
+        }
