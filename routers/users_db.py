@@ -95,11 +95,11 @@ async def user_update(user: User, id: str):
                         detail='the email is assigned to another user'
                     )
 
-        print(id)
-        print(user)
-        print({'$set': user_dict})
-        print(ObjectId(id))
-        return
+        # print(id)
+        # print(user)
+        # print({'$set': user_dict})
+        # print(ObjectId(id))
+        # return
     
         user_updated = db_client.python_api.users.find_one_and_update(
             {'_id': ObjectId(id) },
@@ -116,14 +116,13 @@ async def user_update(user: User, id: str):
 @router_users_db.delete('/{id}')
 async def user_delete_by_id(id: str):
     try:
-        user: User = search_user(key='_id', value=ObjectId(id))
-        if type(user) != User:
+        user = db_client.pythion_api.users.find_one_and_delete({'_id': ObjectId(id)})
+        if user == None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail='user not found'
             )
-        
-        db_client.python_api.users.delete_one({'_id': ObjectId(id)})
+
         return {'before': user, }
     except Exception as ex:
         return {'error': 'deleting user', 'data': id, 'ex': ex, }
