@@ -22,3 +22,14 @@ GET http://127.0.0.1:8000/usersdb/query/?id=6893c8113d08c41f971e9b8b HTTP/1.1
 
 DELETE http://127.0.0.1:8000/usersdb/6893c82c3d08c41f971e9b8c HTTP/1.1
 ###
+
+PUT http://127.0.0.1:8000/usersdb/6894ca58d79000b0a946ea76 HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "carlos2",
+    "first_name": "Carlos 2",
+    "last_name": "Cold two",
+    "age": 44,
+    "email": "carlos2@gmail.com"
+}

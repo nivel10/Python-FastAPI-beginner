@@ -3,6 +3,7 @@ from db.models.user import User
 from db.schemas.user import user_schema, users_schema
 from db.client import db_client
 from bson import ObjectId
+from pymongo import ReturnDocument
 
 router_users_db = APIRouter(
     prefix='/usersdb',
@@ -64,24 +65,51 @@ async def user_create(user: User):
         return {'error': 'creating user', 'data': user, 'ex': ex}
 
 @router_users_db.put('/{id}')
-async def user_update(user: User, id: int):
+async def user_update(user: User, id: str):
     try:
-        if id != user.id:
+        user_before: User = search_user(key='_id', value=ObjectId(id))
+        if type(user_before) != User:
             raise HTTPException(
-                status_code=status.HTTP_204_NO_CONTENT, 
-                detail='id parameter is not same than id user propertie'
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='user not found'
             )
         
-        user_before: User = search_user_by_id(id=id)
-        if type(user_before) != User:
-            return {'error': 'user not found'}
+        user_dict = dict(user)
+        del user_dict['id']
         
-        for index, user_data in enumerate(users):
-            if user_data.id == id:
-                users[index] = user
-                break
+        if user_dict.get('username'):
+            user_find = search_user(key='username', value=user.username)
+            if type(user_find) == User:
+                if not user_find.id == user_before.id:
+                    raise HTTPException(
+                        status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                        detail='the username is assigned to another user'
+                    )
         
-        return {'before': user_before, 'after': user}
+        if user_dict.get('email'):
+            user_find = search_user(key='email', value=user.email)
+            if type(user_find) == User:
+                if not user_find.id == user_before.id:
+                    raise HTTPException(
+                        status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                        detail='the email is assigned to another user'
+                    )
+
+        print(id)
+        print(user)
+        print({'$set': user_dict})
+        print(ObjectId(id))
+        return
+    
+        user_updated = db_client.python_api.users.find_one_and_update(
+            {'_id': ObjectId(id) },
+            {'$set': user_dict},
+            return_document=ReturnDocument.AFTER
+        )
+
+        print(user_updated)
+        
+        return {'before': user_before, 'after': user_updated}
     except Exception as ex:
         return {'error': 'updating user', 'data': user, 'ex': ex}
 
@@ -104,9 +132,15 @@ async def user_delete_by_id(id: str):
 def search_user(key: str, value: str | ObjectId):
     try:
         user_find = db_client.python_api.users.find_one({key: value})
-        user_find = user_schema(user_find)
-        user = User(**user_find)
-
-        return user
+        
+        if not user_find == None:
+            user_find = user_schema(user_find)
+            user = User(**user_find)
+            return user
+    
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='user not found'
+        )
     except Exception as ex:
-        return {'error': 'serach user', 'ex': ex, }
+        return {'error': 'search user', 'ex': ex, }
