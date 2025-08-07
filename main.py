@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import products, users, basic_auth_users, jwt_auth_users, users_db
+from routers import products, users, basic_auth_users, jwt_auth_users, users_db, users_db_local
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
@@ -10,6 +10,8 @@ app.include_router(users.router_users)
 app.include_router(basic_auth_users.basic_auth_users_router)
 app.include_router(jwt_auth_users.jwt_auth_users_router)
 app.include_router(users_db.router_users_db)
+app.include_router(users_db_local.router_users_db_local)
+
 app.mount('/static', StaticFiles(directory='static'), name='static')
 
 # server run

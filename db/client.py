@@ -37,7 +37,13 @@ mongodb_obj: MongoDB = MongoDB(
 # ).python_api
 #endregion
 
-db_client_server = MongoClient(
+db_client_local = MongoClient(
     mongodb_obj.urls.server,
-    tlsCAFIle=mongodb_obj.certifi
+    tlsCAFIle=mongodb_obj.certifi,
+)[mongodb_obj.db_name]
+
+db_client_local = MongoClient(
+    # mongodb_obj.urls.local,
+    mongodb_obj.urls.server,
+    tlsCAFIle=mongodb_obj.certifi,
 )[mongodb_obj.db_name]

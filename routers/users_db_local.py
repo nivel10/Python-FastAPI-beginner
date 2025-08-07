@@ -6,8 +6,8 @@ from bson import ObjectId
 from pymongo import ReturnDocument
 from db.models.mongo_db import MongoDB_collections
 
-router_users_db = APIRouter(
-    prefix='/usersdb',
+router_users_db_local = APIRouter(
+    prefix='/usersdb_local',
     tags=['usersdb'],
     responses={
         status.HTTP_404_NOT_FOUND: {'message': 'not found'}
@@ -21,24 +21,24 @@ router_users_db = APIRouter(
 users: list[User] = []
 db_collections: MongoDB_collections = mongodb_collections
 
-@router_users_db.get('/', response_model=list[User])
+@router_users_db_local.get('/', response_model=list[User])
 async def users_json():
     # users = db_client_server[db_collections.users].find()
     users = db_client_local[db_collections.users].find()
     return users_schema(users)
 
-@router_users_db.get('/{id}')
+@router_users_db_local.get('/{id}')
 async def user_by_id(id: str):
     # return search_user_by_id(id=id)
     return search_user(key='_id', value=ObjectId(id))
     
-@router_users_db.get('/query/')
+@router_users_db_local.get('/query/')
 async def user_query(id: str):
     # return search_user_by_id(id=id)
     return search_user(key='_id', value=ObjectId(id))
 
 ## @router_users_db.post('/', response_model=User, status_code=201)
-@router_users_db.post('/', status_code=201)
+@router_users_db_local.post('/', status_code=201)
 async def user_create(user: User):
     try:
         # if type(search_user_by_username(username=user.username)) == User:
@@ -68,7 +68,7 @@ async def user_create(user: User):
         return {'error': 'creating user', 'data': user, 'ex': ex}
 
 #@router_users_db.put('/{id}', response_model=User)
-@router_users_db.put('/{id}')
+@router_users_db_local.put('/{id}')
 async def user_update(user: User, id: str):
     try:
         user_before: User = search_user(key='_id', value=ObjectId(id))
@@ -109,7 +109,7 @@ async def user_update(user: User, id: str):
     except Exception as ex:
         return {'error': 'updating user', 'data': user, 'ex': ex}
 
-@router_users_db.delete('/{id}')
+@router_users_db_local.delete('/{id}')
 async def user_delete_by_id(id: str):
     try:
         user = db_client_local[db_collections.users].find_one_and_delete({'_id': ObjectId(id)})
