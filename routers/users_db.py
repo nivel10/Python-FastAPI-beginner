@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, status
 from db.models.user import User
 from db.schemas.user import user_schema, users_schema
-from db.client import db_client_server
+from db.client import db_client_server, mongodb_collections
 from bson import ObjectId
 from pymongo import ReturnDocument
+from db.models.mongo_db import MongoDB_collections
 
 router_users_db = APIRouter(
     prefix='/usersdb',
@@ -18,10 +19,12 @@ router_users_db = APIRouter(
 ## ReDoc /redoc
 
 users: list[User] = []
+db_collections: MongoDB_collections = mongodb_collections
 
 @router_users_db.get('/', response_model=list[User])
 async def users_json():
-    users = db_client_server.users.find()
+    # users = db_client_server[db_collections.users].find()
+    users = db_client_server[db_collections.users].find()
     return users_schema(users)
 
 @router_users_db.get('/{id}')
@@ -55,8 +58,8 @@ async def user_create(user: User):
         user_dict = dict(user)
         del user_dict['id']
 
-        user_id = db_client_server.users.insert_one(user_dict).inserted_id
-        user_find = user_schema(db_client_server.users.find_one({'_id': user_id}))
+        user_id = db_client_server[db_collections.users].insert_one(user_dict).inserted_id
+        user_find = user_schema(db_client_server[db_collections.users].find_one({'_id': user_id}))
         user = User(**user_find)
 
         return user
@@ -96,7 +99,7 @@ async def user_update(user: User, id: str):
                         detail='the email is assigned to another user'
                     )
     
-        user_after = db_client_server.users.find_one_and_replace(
+        user_after = db_client_server[db_collections.users].find_one_and_replace(
             {'_id': ObjectId(id) },
             user_dict,
             return_document=ReturnDocument.AFTER
@@ -109,21 +112,21 @@ async def user_update(user: User, id: str):
 @router_users_db.delete('/{id}')
 async def user_delete_by_id(id: str):
     try:
-        user = db_client_server.pythion_api.users.find_one_and_delete({'_id': ObjectId(id)})
+        user = db_client_server[db_collections.users].find_one_and_delete({'_id': ObjectId(id)})
         if user == None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail='user not found'
             )
-
-        return {'before': user, }
+        
+        return {'before': user_schema(user), }
     except Exception as ex:
         return {'error': 'deleting user', 'data': id, 'ex': ex, }
 
 # ----------------------------------------
 def search_user(key: str, value: str | ObjectId):
     try:
-        user_find = db_client_server.users.find_one({key: value})
+        user_find = db_client_server[db_collections.users].find_one({key: value})
         
         if not user_find == None:
             user_find = user_schema(user_find)
