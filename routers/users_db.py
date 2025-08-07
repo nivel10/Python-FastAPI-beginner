@@ -34,7 +34,7 @@ async def user_query(id: str):
     # return search_user_by_id(id=id)
     return search_user(key='_id', value=ObjectId(id))
 
-#@router_users_db.post('/', response_model=User, status_code=201)
+## @router_users_db.post('/', response_model=User, status_code=201)
 @router_users_db.post('/', status_code=201)
 async def user_create(user: User):
     try:
@@ -64,6 +64,7 @@ async def user_create(user: User):
     except Exception as ex:
         return {'error': 'creating user', 'data': user, 'ex': ex}
 
+#@router_users_db.put('/{id}', response_model=User)
 @router_users_db.put('/{id}')
 async def user_update(user: User, id: str):
     try:
@@ -94,22 +95,14 @@ async def user_update(user: User, id: str):
                         status_code=status.HTTP_406_NOT_ACCEPTABLE,
                         detail='the email is assigned to another user'
                     )
-
-        # print(id)
-        # print(user)
-        # print({'$set': user_dict})
-        # print(ObjectId(id))
-        # return
     
-        user_updated = db_client.python_api.users.find_one_and_update(
+        user_after = db_client.python_api.users.find_one_and_replace(
             {'_id': ObjectId(id) },
-            {'$set': user_dict},
+            user_dict,
             return_document=ReturnDocument.AFTER
         )
-
-        print(user_updated)
         
-        return {'before': user_before, 'after': user_updated}
+        return {'before': dict(user_before), 'after': user_schema(user_after)}
     except Exception as ex:
         return {'error': 'updating user', 'data': user, 'ex': ex}
 
