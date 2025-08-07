@@ -7,7 +7,7 @@ load_dotenv()
 
 mongodb_url = os.getenv('MONGO_DB_URL')
 
-db_client = MongoClient(
+db_client_server = MongoClient(
     mongodb_url,
     #region
     # # warning, do not use this on production
@@ -16,4 +16,4 @@ db_client = MongoClient(
     # # warning, do not use this on production
     #endregion
      tlsCAFIle=certifi.where(),
-)
+).python_api
